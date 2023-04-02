@@ -1,35 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { createViewChild } from '@angular/compiler/src/core';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
+import { FirebaseServiceService } from 'src/app/services/firebase-service.service';
+import FirestorePosition from 'src/app/interfaces/position.interface';
 
-
-export interface Marker {
-  options: google.maps.MarkerOptions,
-  markerPosition: google.maps.LatLngLiteral
-}
-export interface Position {
-  color: string,
-  icon: string,
-  id: number,
-  lat: number,
-  lng: number,
-  patent: string,
-  capacity: number,
-  loaded: number,
-  phone: string,
-  name: string,
-  infoWindow?: string,
-  marker?: Marker
-}
 @Component({
   selector: 'app-google-map-demo',
   templateUrl: './google-map-demo.component.html',
   styleUrls: ['./google-map-demo.component.scss']
 })
-
 
 export class GoogleMapDemoComponent implements OnInit {
 
@@ -41,9 +22,10 @@ export class GoogleMapDemoComponent implements OnInit {
   center: google.maps.LatLngLiteral;
   showSpinner: boolean = false;
   markerOptions: google.maps.MarkerOptions = { draggable: false, icon: 'assets/images/marcador-epec-verde.png', clickable: true, };
-  positions: Position[] = [];
+  positions: FirestorePosition[] = [];
 
-  constructor(httpClient: HttpClient) {
+  constructor(httpClient: HttpClient,
+    private placesService: FirebaseServiceService) {
     this.apiLoaded = httpClient.jsonp('https://maps.googleapis.com/maps/api/js?key=AIzaSyBMN4CLBzIRPZZ26DBGIISei4OsZiSpmCo', 'callback')
       .pipe(
         map(() => true),
@@ -61,24 +43,18 @@ export class GoogleMapDemoComponent implements OnInit {
     this.getPositions();
   }
 
-  getPositions() {
+  async onClickDelete(place: any) {
+    //const response = await this.placesService.deletePlace(place);
+    console.log(place);
+  }
 
-    let position: Position = {
-      color: 'red',
-      icon: 'truck',
-      id: 1,
-      lat: -38.75421086939975,
-      lng: -62.26506815533449,
-      patent: 'AB123CD',
-      capacity: 10000,
-      loaded: 1000,
-      phone: '2916481551',
-      name: 'Juan López'
-    }
+  setPositionsList(positions) {
+    console.log('positions', positions)
+    positions.forEach(position => {
 
-    let markerOptions: google.maps.MarkerOptions = Object.assign({}, this.markerOptions);
-    markerOptions.icon = 'assets/images/' + position.icon + '-' + position.color + '.png';
-    position.marker = ({ markerPosition: { lat: -38.754113684946326, lng: -62.26513280517563 }, options: markerOptions });
+      let markerOptions: google.maps.MarkerOptions = Object.assign({}, this.markerOptions);
+      markerOptions.icon = 'assets/images/' + position.icon + '-' + position.color + '.png';
+      position.marker = ({ markerPosition: { lat: position.lat, lng: position.lng }, options: markerOptions });
 
       let infoWindow = '<div class="info">' +
         '<h2>' + position.patent + '</h2>' +
@@ -87,47 +63,21 @@ export class GoogleMapDemoComponent implements OnInit {
         '<p>Cargado: ' + position.loaded + '<br>' +
         '<p>Nombre: ' + position.name + '<br>' +
         '<p>Teléfono: ' + position.phone + '<br>' +
-        '<p><a href="' + position.phone + '" target="blank">Llamar</a></p>' +        
+        '<p><a href="' + position.phone + '" target="blank">Llamar</a></p>' +
         '</div>' +
         '<input id="markerId" type="hidden" value="' + position.id + '"/>' +
         '</div>';
-        position.infoWindow = infoWindow;
+      position.infoWindow = infoWindow;
+    });
+    this.positions = positions;
+  }
 
-        this.positions.push(position);
-
-        let position2: Position = {
-          color: 'green',
-          icon: 'truck',
-          id: 1,
-          lat: -36.937212562735255,
-          lng: -60.32535166151644,
-          patent: 'ZB444CD',
-          capacity: 9000,
-          loaded: 0,
-          phone: '2916481551',
-          name: 'José Pérez'
-        }
-    
-        let markerOptions2: google.maps.MarkerOptions = Object.assign({}, this.markerOptions);
-        markerOptions2.icon = 'assets/images/' + position2.icon + '-' + position2.color + '.png';
-        position2.marker = ({ markerPosition: { lat: position2.lat, lng: position2.lng }, options: markerOptions2 });
-    
-         let infoWindow2 = '<div class="info">' +
-            '<h2>' + position2.patent + '</h2>' +
-            '<div class="contenidoInfo">' +
-            '<p>Capacidad: ' + position2.capacity + '<br>' +
-            '<p>Cargado: ' + position2.loaded + '<br>' +
-            '<p>Nombre: ' + position2.name + '<br>' +
-            '<p>Teléfono: ' + position2.phone + '<br>' +
-            '<p><a href="' + position2.phone + '" target="blank">Llamar</a></p>' +        
-            '</div>' +
-            '<input id="markerId" type="hidden" value="' + position2.id + '"/>' +
-            '</div>';
-            position2.infoWindow = infoWindow2;
-    
-            this.positions.push(position2);
-            console.log('this.positions',this.positions)
-    
+  getPositions() {
+    this.placesService.getPlaces().subscribe(positions => {
+      this.setPositionsList(positions);
+    }, error => {
+      console.log('error', error);
+    })
   }
 
 

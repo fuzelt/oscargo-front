@@ -6,6 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
+
 const routes: Routes = [
   {
     path: '',
@@ -23,7 +24,9 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     GoogleMapsModule,
     HttpClientModule,
-    HttpClientJsonpModule,
-  ]
+    HttpClientJsonpModule,/*
+    provideFirebaseApp(() => initializeApp( environment.firebase )),
+    provideFirestore(() => getFirestore()),*/
+  ],
 })
 export class GoogleMapDemoModule { }
