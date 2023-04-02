@@ -9,6 +9,11 @@ const routes: Routes = [
     loadChildren: () => import('./pages/map/googlemap/googlemap.module')
       .then(m => m.GooglemapModule)
   },
+  {
+    path: 'map/googlemap/google-map-demo',
+    loadChildren: () => import('./pages/map/google-map-demo/google-map-demo.module')
+      .then(m => m.GoogleMapDemoModule)
+  },
 ]
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
