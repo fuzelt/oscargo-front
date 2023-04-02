@@ -1,4 +1,15 @@
-<p>google-map-demo works!</p>
-<div *ngIf="apiLoaded | async">
-    <google-map></google-map>
+<div *ngIf="apiLoaded | async" class="google-map-demo">
+    <google-map #gmap class="google-map-mapa" width="100%" heigth="100%" [options]="options" [zoom]="zoomMap"
+        [center]="center" (mapClick)="addMarker($event)" (zoomChanged)="zoomChanged(gmap)">
+
+        <div *ngFor="let position of positions">
+            <map-marker *ngIf="position.marker && position.marker.markerPosition" #marker="mapMarker"
+                (mapClick)="openInfoWindow(marker, position)" [position]="position.marker.markerPosition"
+                [options]="position.marker.options">
+            </map-marker>
+        </div>
+
+        <map-info-window #infoWindow="mapInfoWindow"></map-info-window>
+
+    </google-map>
 </div>

@@ -4,6 +4,7 @@ import { GoogleMapDemoComponent } from './google-map-demo.component';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 const routes: Routes = [
   {
@@ -18,6 +19,7 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule.forChild(routes),
     GoogleMapsModule,
     HttpClientModule,
