@@ -11,6 +11,7 @@ export default interface FirestorePosition {
     loaded: number,
     phone: string,
     name: string,
+    timestamp?: string,
     infoWindow?: string,
     marker?: Marker
   }
