@@ -59,7 +59,7 @@ export class GoogleMapDemoComponent implements OnInit {
       let infoWindow = '<div class="info">' +
         '<h2>' + position.patent + '</h2>' +
         '<div class="contenidoInfo">' +
-        '<p>Fecha: ' + position.timestamp + '<br>' +
+        '<p>Fecha: ' + position.datetime + '<br>' +
         '<p>Capacidad: ' + position.capacity + '<br>' +
         '<p>Cargado: ' + position.loaded + '<br>' +
         '<p>Nombre: ' + position.name + '<br>' +
